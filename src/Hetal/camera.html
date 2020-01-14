@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Camera</title>
+</head>
+<body>
+
+<p><button id="start" onclick="start()">start camera!</button></p>
+
+<div>
+ <div style="float:left;margin-right:5px;">
+  <p><video id="video-tag" width="240" height="180" autoplay=true/></p>
+ </div>
+ <div style="float:left">
+  <p><img id="image-tag" width="240"> </img></p>
+ </div>
+</div>
+  
+<div style="width: 240px">
+  <p><button onclick="takePhoto()">take photo</button></p>
+ <input type="range" id="zoom-slider" min="0", max="0">
+ <output id="zoom-slider-value"></output>
+
+<!-- code for geo location -->
+<p>Click the button to get your coordinates.</p>
+
+<button onclick="getLocation()">Try It</button>
+<p id="latitude" ></p>
+<p id="longitude" ></p>
+<p id="demo"></p>
+<button id="submitgarbage" >Click</button>
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+var x = document.getElementById("demo");
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+  
+function showPosition(position) {
+    // x.innerHTML="Latitude: " + position.coords.latitude + 
+    // "<br>Longitude: " + position.coords.longitude;
+    $("#latitude").html(position.coords.latitude)
+    $("#longitude").html(position.coords.longitude)
+}
+$("#submitgarbage").click(function(e){
+	console.log("Hello",$("#latitude").html())
+	e.preventDefault()
+	$.ajax({
+	    url: "http://176486bf.ngrok.io/api/garbage/",
+	    data: JSON.stringify({
+	    	"photo":$("#image-tag").attr("src"),
+	    	"latitude":$("#latitude").html(),
+	    	"longitude":$("#longitude").html()
+	    }),
+	    method: "POST",
+	    async: true,
+            cache: false,
+            contentType: "application/json",
+            enctype: 'multipart/form-data',
+            processData: false,
+	    success: function(data){
+	        console.log("success")
+	    },
+	    error: function(data){
+	        console.log("ERROR")
+	        console.log(data)
+	        console.log(data.status)
+	    },
+	})
+})
+</script>
+</div>
+</body>
+<script src="camera.js"></script>
+
+</html>
+
